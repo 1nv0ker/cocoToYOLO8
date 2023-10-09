@@ -1,1 +1,1 @@
-# cocoToYOLO8
+# 将coco数据集转换成YOLO8的数据集
