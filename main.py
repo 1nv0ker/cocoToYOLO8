@@ -3,7 +3,7 @@ import json
 import numpy as np
 import shutil
 JSONPATH='images/Annotations/coco_info.json'
-IMAGE_PATH='images/Images'
+IMAGE_PATH='images\\Images'
 SAVE_PATH = 'dataset'
 TRAINIMAGE_PATH ='images'
 LABEL_PATH = 'labels'
@@ -73,19 +73,21 @@ def handle():
     imageNum = len(images)
     k=0
     for item in images:
-        filename=item['file_name']
-        sourcePath = os.path.join(IMAGE_PATH, filename)
+        filename=str(k)+'.jpg'
+        sourcePath = os.path.join(IMAGE_PATH, item['file_name'])
         if k<imageNum*0.6:
-            targetPath = os.path.join(trainpath,filename)
-            writeLabel(item, trainlabel)
-            shutil.copy(sourcePath, targetPath)
+            targetPath = os.path.join(trainpath, filename)
+            writeLabel(item, trainlabel, filename)
+            
         elif k>=imageNum*0.6 and k<imageNum*0.8:
-            targetPath = os.path.join(valpath,filename)
-            writeLabel(item, vallabel)
-            shutil.copy(sourcePath, targetPath)
+            targetPath = os.path.join(valpath, filename)
+            writeLabel(item, vallabel, filename)
+            # shutil.copy(sourcePath, targetPath)
         else:
             targetPath = os.path.join(testpath,filename)
-            writeLabel(item, testlabel)
+            writeLabel(item, testlabel, filename)
+            # shutil.copy(sourcePath, targetPath)
+        if os.path.exists(sourcePath) == True:
             shutil.copy(sourcePath, targetPath)
         k = k +1
 
@@ -99,18 +101,21 @@ def getAnnotations(id):
             bbox.append(temp)
     return bbox
 
-def writeLabel(item, path):
-    filename=item['file_name']
+def writeLabel(item, path, filename):
     bbox = getAnnotations(item['id'])
     name, _ = os.path.splitext(filename)
     tempPath = os.path.join(path, name+'.txt')
-    tempTxt=open(tempPath,'w', encoding='utf-8')
+    tempTxt=open(tempPath,'w')
     width=item['width']
     height=item['height']
     for box in bbox:
         x,y,w,h = box['bbox']
+        x=round((x+w)/2/width, 6)
+        y=round((y+h)/2/height, 6)
+        w=round(w/width, 6)
+        h=round(h/height, 6)
         categoryId = box['category_id']
-        content = str(categoryId)+' '+str(x/width)+' '+str(y/height)+' '+str(w/width)+' '+str(h/height)
+        content = str(categoryId)+' '+str(x)+' '+str(y)+' '+str(w)+' '+str(h)
         tempTxt.write(content)
         tempTxt.write('\n')
     tempTxt.close()
