@@ -74,6 +74,7 @@ def handle():
     k=0
     for item in images:
         filename=str(k)+'.jpg'
+        # filename=item['file_name']
         sourcePath = os.path.join(IMAGE_PATH, item['file_name'])
         if k<imageNum*0.6:
             targetPath = os.path.join(trainpath, filename)
@@ -110,12 +111,12 @@ def writeLabel(item, path, filename):
     height=item['height']
     for box in bbox:
         x,y,w,h = box['bbox']
-        x=round((x+w)/2/width, 6)
-        y=round((y+h)/2/height, 6)
-        w=round(w/width, 6)
-        h=round(h/height, 6)
+        x1=(x+w/2)/width
+        y1=(y+h/2)/height
+        w1=w/width
+        h1=h/height
         categoryId = box['category_id']
-        content = str(categoryId)+' '+str(x)+' '+str(y)+' '+str(w)+' '+str(h)
+        content = str(categoryId)+' '+str(x1)+' '+str(y1)+' '+str(w1)+' '+str(h1)
         tempTxt.write(content)
         tempTxt.write('\n')
     tempTxt.close()
